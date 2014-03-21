@@ -16,7 +16,8 @@ grant drop  any table to HALL;
 grant alter any table to HALL;
 
 create table TEST_TABLE (
-	id number(10);
-	name varchar(100);
-	time date default sysdate;
-)
+	id number(10),
+	name varchar(100),
+	time date default sysdate
+);
+
