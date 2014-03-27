@@ -57,6 +57,10 @@ create table SAMPLE_TABLE_1 (
 
 alter table SAMPLE_TABLE_1 add constraint foreign_key_id foreign key(r_id) references TEST_TABLE;
 
+create global temporary table TEST_TEMPORARY_TABLE (
+	id number(10)
+);
+
 create cluster TEST_CLUSTER (id number(10))
 	size 123
 	storage (initial 100k next 50k);
