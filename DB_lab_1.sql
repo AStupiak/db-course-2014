@@ -139,3 +139,35 @@ CREATE TABLE emp (
    ename VARCHAR2(15) NOT NULL,
    deptno NUMBER(3) REFERENCES dept)
    CLUSTER emp_dept (deptno);
+
+/* -------------------------------------Task number 4---------------------------------------------*/
+
+insert info TESTTABLE(TEST_NUMERIC, TEST_STRING, TEST_DATE)
+   VALUES(200, 'string', TO_DATE('2013/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'));
+
+
+select TEST_NUMERIC, TEST_STRING, TEST_DATE
+   from TESTTABLE
+   WHERE TEST_NUMERIC = 200;
+
+
+ALTER TABLE TESTTABLE
+   ADD new_col CHAR(25);
+
+ALTER TABLE TESTTABLE
+   ADD col_with_defvalue CHAR(25) DEFAULT 'this is def value' NOT NULL;
+
+ALTER TABLE TESTTABLE
+   MODIFY new_col char(25) not NULL;
+
+ALTER TABLE TESTTABLE
+   RENAME COLUMN new_col TO sales;
+
+ALTER TABLE TESTTABLE
+   DROP COLUMN sales;
+
+ALTER TABLE TESTTABLE
+   MODIFY col_with_defvalue DEFAULT NULL;
+
+ALTER TABLE TESTTABLE
+   DISABLE CONSTRAINT string_unique
