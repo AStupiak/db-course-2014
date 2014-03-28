@@ -25,6 +25,10 @@ create table TEST_TABLE (
 	time date default sysdate
 );
 
+create sequence num_inc start with 1 increment by 1;
+
+insert into TEST_TABLE (id, name) values(num_inc.nextval, 'test');
+
 comment on table TEST_TABLE is 'My comment';
 comment on column TEST_TABLE.name is 'Another comment';
 
