@@ -47,6 +47,8 @@ insert into TEST_TABLE(id, name) values(1, "Abfsdfc");
 insert into TEST_TABLE(id, name) values(1, "bc");
 insert into TEST_TABLE(id, name) values(2, "Abc");
 
+select 'alter table ' || table_name || ' disable constraint ' || constraint_name || ';' from user_constraints;
+
 create table SAMPLE_TABLE_0 (
 	id number(10) primary key,
 	name varchar(100),
