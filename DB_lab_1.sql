@@ -142,7 +142,7 @@ CREATE TABLE emp (
 
 /* -------------------------------------Task number 4---------------------------------------------*/
 
-insert info TESTTABLE(TEST_NUMERIC, TEST_STRING, TEST_DATE)
+insert into TESTTABLE(TEST_NUMERIC, TEST_STRING, TEST_DATE)
    VALUES(200, 'string', TO_DATE('2013/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'));
 
 
@@ -175,3 +175,5 @@ ALTER TABLE TESTTABLE
 RENAME TESTTABLE to TESTTABLE_bak
 
 CREATE TABLE TESTTABLE as (select * from TESTTABLE_bak)
+
+/*---------------DISABLING ALL CONSTRAINTS---------------------*/
