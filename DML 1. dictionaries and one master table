@@ -17,13 +17,13 @@ create table DICTIONARY_TABLE_1 (
 insert into DICTIONARY_TABLE_1(name, age)
 VALUES('Mike', 18);
 insert into DICTIONARY_TABLE_1(name, age)
-VALUES('Kate', 20);
+VALUES('Jackob', 27);
 insert into DICTIONARY_TABLE_1(name, age)
 VALUES('Alise', 20);
 insert into DICTIONARY_TABLE_1(name, age)
-VALUES('Bob', 19);
+VALUES('Sam', 19);
 insert into DICTIONARY_TABLE_1(name, age)
-VALUES('Jack', 21);
+VALUES('Din', 21);
 
 create table DICTIONARY_TABLE_2 as select * from DICTIONARY_TABLE_1;
 create table DICTIONARY_TABLE_3 as select * from DICTIONARY_TABLE_1;
