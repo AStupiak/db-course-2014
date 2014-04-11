@@ -1,0 +1,190 @@
+CREATE TABLESPACE mytblspc
+DATAFILE 'C:\Users\Andrey\Documents\University\DB-Course\mytblspc.dat' SIZE 100M REUSE
+AUTOEXTEND ON NEXT 2M MAXSIZE 200M;
+
+SELECT tablespace_name, file_name, status, bytes
+FROM dba_data_files
+WHERE tablespace_name LIKE 'mytbl%'
+ORDER BY tablespace_name, file_name;
+/* -- пусто -- */
+
+CREATE USER root IDENTIFIED BY root
+DEFAULT TABLESPACE TBLSPCMYONE;
+
+GRANT CREATE SESSION TO root /* System */
+
+/* тест */
+connect root/root
+
+connect System/29464@xe
+
+/* просмотр инфы о юзере */
+SELECT USERNAME, USER_ID, PASSWORD, ACCOUNT_STATUS, DEFAULT_TABLESPACE,
+TEMPORARY_TABLESPACE, PROFILE
+FROM DBA_USERS
+WHERE USERNAME = 'root'; 
+/* -- пусто -- */
+
+/* назначение прав юзеру */
+
+/* на создание */
+GRANT CREATE TABLE TO root;
+GRANT CREATE PROCEDURE TO root;
+GRANT CREATE TRIGGER TO root;
+GRANT CREATE VIEW TO root;
+GRANT CREATE SEQUENCE TO root;
+
+/* на изменение */
+GRANT ALTER ANY TABLE TO root;
+GRANT ALTER ANY PROCEDURE TO root;
+GRANT ALTER ANY TRIGGER TO root;
+GRANT ALTER PROFILE TO root;
+
+/* на удаление */
+GRANT DELETE ANY TABLE TO root;
+GRANT DROP ANY TABLE TO root;
+GRANT DROP ANY PROCEDURE TO root;
+GRANT DROP ANY TRIGGER TO root;
+GRANT DROP ANY VIEW TO root;
+GRANT DROP ANY PROFILE TO root;
+
+/* кэп всесилен! */
+GRANT UNLIMITED TABLESPACE TO Admin1
+
+/* создание таблицы и т.п. */
+
+connect root/root;
+
+CREATE TABLE TEST_TABLE
+(
+	TEST_NUMERIC NUMBER PRIMARY KEY,
+	TEST_STRING VARCHAR2(10),
+	TEST_DATE DATE
+);
+
+COMMENT ON TABLE TEST_TABLE IS 'test_Table comment';
+COMMENT ON COLUMN TEST_TABLE.TEST_NUMERIC IS 'test_Numeric comment';
+COMMENT ON COLUMN TEST_TABLE.TEST_STRING IS 'test_String comment';
+COMMENT ON COLUMN TEST_TABLE.TEST_DATE IS 'test_Date comment';
+
+CREATE INDEX test_string_index_0 ON TEST_TABLE(TEST_STRING)
+TABLESPACE mytblspc
+STORAGE (INITIAL 20K NEXT 20k PCTINCREASE 75);
+
+CREATE INDEX test_date_index_0 ON TEST_TABLE(TEST_DATE)
+TABLESPACE mytblspc
+STORAGE (INITIAL 20K NEXT 20k PCTINCREASE 75);
+
+ALTER TABLE TEST_TABLE MODIFY(TEST_DATE NOT NULL);
+ALTER TABLE TEST_TABLE ADD CONSTRAINT string_unique UNIQUE(TEST_STRING);
+ALTER TABLE TEST_TABLE ADD CONSTRAINT date_check CHECK(TEST_DATE >= date '2013-01-01');
+
+select table_name from user_constraints where constraint_name = 'DATE_CHECK';
+
+
+/* создание зависимой таблицы */
+
+CREATE TABLE TEST_RELATED_TABLE
+(
+	TEST_RELATED_NUMERIC NUMBER PRIMARY KEY,
+	TEST_RELATED_STRING VARCHAR2(10),
+	TEST_RELATED_DATE DATE
+);
+ALTER TABLE TEST_RELATED_TABLE
+ADD CONSTRAINT foreign_Key
+FOREIGN KEY(TEST_RELATED_NUMERIC)
+REFERENCES TEST_TABLE;
+
+
+
+CREATE GLOBAL TEMPORARY TABLE root.TEMP_TABLE
+(
+  ID NUMBER,
+  DNAME VARCHAR2(10)
+);
+
+CREATE CLUSTER emp_dept_0 (deptno NUMBER(3))
+   SIZE 600
+   TABLESPACE mytblspc
+   STORAGE 
+    (
+      INITIAL 200K
+      NEXT 300K
+      MINEXTENTS 2
+      PCTINCREASE 33
+    );
+
+CREATE TABLE dept_0 (
+   deptno_0 NUMBER(3) PRIMARY KEY)
+   CLUSTER emp_dept_0 (deptno_0);
+
+CREATE TABLE emp_0 (
+   empno_0 NUMBER(5) PRIMARY KEY,
+   ename_0 VARCHAR2(15) NOT NULL,
+   deptno_0 NUMBER(3) REFERENCES dept_0)
+   CLUSTER emp_dept_0 (deptno_0);
+
+
+/* вставка, добавление и бэкап */
+
+insert into TEST_TABLE(TEST_NUMERIC, TEST_STRING, TEST_DATE)
+   VALUES(157, 'string', TO_DATE('2014/04/10 11:22:44', 'yyyy/mm/dd hh24:mi:ss'));
+
+select TEST_NUMERIC, TEST_STRING, TEST_DATE
+   from TEST_TABLE
+   WHERE TEST_NUMERIC = 157;
+
+
+ALTER TABLE TEST_TABLE
+   ADD new_col CHAR(25);
+
+ALTER TABLE TEST_TABLE
+   ADD col_with_defvalue CHAR(25) DEFAULT 'this is default value' NOT NULL;
+
+ALTER TABLE TEST_TABLE
+   MODIFY new_col char(25) not NULL;
+
+ALTER TABLE TEST_TABLE
+   RENAME COLUMN new_col TO testing;
+
+ALTER TABLE TEST_TABLE
+   DROP COLUMN testing;
+
+ALTER TABLE TEST_TABLE
+   MODIFY col_with_defvalue DEFAULT NULL;
+
+ALTER TABLE TEST_TABLE
+   DISABLE CONSTRAINT string_unique
+
+RENAME TEST_TABLE to TEST_TABLE_bak
+
+CREATE TABLE TEST_TABLE as (select * from TEST_TABLE_bak)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
