@@ -37,3 +37,19 @@ select example_number_2 from employee WHERE example_number_1=1;
 /*When the transaction tries to get the value
 of it will be different from the initial value in this
 transaction*/
+
+/*----------------Phantom Reads in Repeatable Read level-------------------*/
+
+/*Transaction A*/
+select * from employee
+	where example_number_2 > 1;
+
+/*Transaction B*/
+insert into employee(example_number_1, example_number_2) VALUES(2, 3);
+
+/*Transaction A*/
+select * from employee
+	where example_number_2 > 1;
+
+/*Changes result in the addition of new data.
+So result in transaction A will be different*/
