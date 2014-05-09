@@ -1,0 +1,179 @@
+CREATE TABLESPACE TBLSPCMYONE
+	DATAFILE 'C:\OracleDatabase\app\oracle\oradata\xe\ONE.dat' SIZE 100M REUSE
+	AUTOEXTEND ON NEXT 2M MAXSIZE 200M;
+
+SELECT tablespace_name, file_name, status, bytes
+FROM dba_data_files
+WHERE tablespace_name LIKE 'TBLSP%'
+ORDER BY tablespace_name, file_name
+/
+
+CREATE USER AdminAdmin IDENTIFIED BY AdminAdmin
+DEFAULT TABLESPACE TBLSPCMYONE
+/
+
+/*назначается из-под System*/
+GRANT CREATE SESSION TO AdminAdmin 
+
+connect AdminAdmin/AdminAdmin
+
+connect System/root@xe
+
+SELECT USERNAME, USER_ID, PASSWORD, ACCOUNT_STATUS, DEFAULT_TABLESPACE,
+TEMPORARY_TABLESPACE, PROFILE
+FROM DBA_USERS
+WHERE USERNAME = 'AdminAdmin' /*просмотр информации об пользователе*/
+/
+
+/*назначение прав пользователю*/
+/*на создание объектов БД*/
+GRANT CREATE TABLE TO AdminAdmin
+/
+GRANT CREATE PROCEDURE TO AdminAdmin
+/
+GRANT CREATE TRIGGER TO AdminAdmin
+/
+GRANT CREATE VIEW TO AdminAdmin
+/
+GRANT CREATE SEQUENCE TO AdminAdmin
+/
+
+/*на удаление объектов*/
+GRANT DELETE ANY TABLE TO AdminAdmin
+/
+GRANT DROP ANY TABLE TO AdminAdmin
+/
+GRANT DROP ANY PROCEDURE TO AdminAdmin
+/
+GRANT DROP ANY TRIGGER TO AdminAdmin
+/
+GRANT DROP ANY VIEW TO AdminAdmin
+/
+GRANT DROP ANY PROFILE TO AdminAdmin
+/
+
+/*на изменение объектов*/
+GRANT ALTER ANY TABLE TO AdminAdmin
+/
+GRANT ALTER ANY PROCEDURE TO AdminAdmin
+/
+GRANT ALTER ANY TRIGGER TO AdminAdmin
+/
+GRANT ALTER PROFILE TO AdminAdmin
+/
+
+connect System/root@xe
+
+GRANT UNLIMITED TABLESPACE TO AdminAdmin
+
+connect AdminAdmin/AdminAdmin
+
+CREATE TABLE TEST_TABLE
+(
+	TEST_NUMERIC NUMBER PRIMARY KEY,
+	TEST_STRING VARCHAR2(20),
+	TEST_DATE DATE
+)
+/
+
+COMMENT ON TABLE TEST_TABLE IS 'Comment';
+
+COMMENT ON COLUMN TEST_TABLE.TEST_NUMERIC IS 'Numeric comment';
+COMMENT ON COLUMN TEST_TABLE.TEST_STRING IS 'String comment';
+COMMENT ON COLUMN TEST_TABLE.TEST_DATE IS 'Date comment';
+
+CREATE INDEX test_string_index ON TEST_TABLE(TEST_STRING)
+TABLESPACE TBLSPCMYONE
+STORAGE (INITIAL 20K NEXT 20k PCTINCREASE 75);
+
+CREATE INDEX test_date_index ON TEST_TABLE(TEST_DATE)
+TABLESPACE TBLSPCMYONE
+STORAGE (INITIAL 20K NEXT 20k PCTINCREASE 75);
+
+ALTER TABLE TEST_TABLE MODIFY(TEST_DATE NOT NULL);
+ALTER TABLE TEST_TABLE ADD CONSTRAINT string_unique UNIQUE(TEST_STRING);
+ALTER TABLE TEST_TABLE ADD CONSTRAINT date_check CHECK(TEST_DATE >= date '2012-01-01');
+
+select table_name from user_constraints where constraint_name = 'DATE_CHECK';
+
+CREATE TABLE TESTRELATEDTABLE
+(
+	TEST_RELATED_NUMERIC NUMBER PRIMARY KEY,
+	TEST_RELATED_STRING VARCHAR2(20),
+	TEST_RELATED_DATE DATE
+
+)
+/
+
+
+/*
+ALTER TABLE имя_подчиненной_таблицы
+ADD CONSTRAINT имя_ограничения
+FOREIGN KEY (имена_столбцов_подчиненной_таблицы)
+REFERENCES имя_главной_таблицы;
+*/
+ALTER TABLE TESTRELATEDTABLE
+ADD CONSTRAINT foreign_key
+FOREIGN KEY(TEST_RELATED_NUMERIC)
+REFERENCES TEST_TABLE;
+
+CREATE GLOBAL TEMPORARY TABLE ADMINADMIN.TEMP_TABLE
+(
+	ID NUMBER,
+	DNAME VARCHAR2(20)
+)
+/
+
+CREATE CLUSTER emp_dept (deptno NUMBER(3))
+   SIZE 600
+   TABLESPACE TBLSPCMYONE
+   STORAGE (INITIAL 200K
+      NEXT 300K
+      MINEXTENTS 2
+      PCTINCREASE 33);
+
+CREATE TABLE dept (
+   deptno NUMBER(3) PRIMARY KEY)
+   CLUSTER emp_dept (deptno);
+
+CREATE TABLE emp (
+   empno NUMBER(5) PRIMARY KEY,
+   ename VARCHAR2(25) NOT NULL,
+   deptno NUMBER(3) REFERENCES dept)
+   CLUSTER emp_dept (deptno);
+
+/* -------------------------------------Task number 4---------------------------------------------*/
+
+insert into TEST_TABLE(TEST_NUMERIC, TEST_STRING, TEST_DATE)
+   VALUES(200, 'string', TO_DATE('2012/05/03 15:58:11', 'yyyy/mm/dd hh24:mi:ss'));
+
+
+select TEST_NUMERIC, TEST_STRING, TEST_DATE
+   from TEST_TABLE
+   WHERE TEST_NUMERIC = 200;
+
+
+ALTER TABLE TEST_TABLE
+   ADD new_col CHAR(25);
+
+ALTER TABLE TEST_TABLE
+   ADD col_with_defvalue CHAR(25) DEFAULT 'this is def value' NOT NULL;
+
+ALTER TABLE TEST_TABLE
+   MODIFY new_col char(25) not NULL;
+
+ALTER TABLE TEST_TABLE
+   RENAME COLUMN new_col TO sales;
+
+ALTER TABLE TEST_TABLE
+   DROP COLUMN sales;
+
+ALTER TABLE TEST_TABLE
+   MODIFY col_with_defvalue DEFAULT NULL;
+
+ALTER TABLE TEST_TABLE
+   DISABLE CONSTRAINT string_unique
+
+RENAME TEST_TABLE to TEST_TABLE_bak
+
+CREATE TABLE TEST_TABLE as (select * from TEST_TABLE_bak)
